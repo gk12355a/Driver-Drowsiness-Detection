@@ -142,23 +142,36 @@ Module [`cleaner.py`](backend/cleaner.py) quản lý và tự động giải ph�
    cd "d:\Projects\TranBaoTram\Driver Drowsiness Detection\backend"
    ```
 
-2. Kích hoạt môi trường ảo Python (virtual environment):
+2. Tạo môi trường ảo Python (virtual environment):
+   - **Trên Windows / macOS / Linux**:
+     ```bash
+     python -m venv venv
+     ```
+     Lệnh này sẽ tạo thư mục `venv/` chứa môi trường Python độc lập cách ly cho dự án.
+
+3. Kích hoạt môi trường ảo vừa tạo:
    - **Trên Windows (PowerShell)**:
      ```powershell
      .\venv\Scripts\Activate.ps1
      ```
-     *(Nếu gặp lỗi Execution Policy trên PowerShell, chạy lệnh: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` rồi chạy lại).*
+     *(Nếu gặp lỗi UnauthorizedAccess hoặc Script Execution Policy trên PowerShell, chạy lệnh: `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` rồi chạy lại lệnh kích hoạt).*
+   - **Trên Windows (Command Prompt - CMD)**:
+     ```cmd
+     .\venv\Scripts\activate.bat
+     ```
    - **Trên macOS / Linux**:
      ```bash
      source venv/bin/activate
      ```
+   Sau khi kích hoạt thành công, đầu dòng lệnh Terminal sẽ xuất hiện tiền tố `(venv)`.
 
-3. (Tùy chọn - nếu cài máy mới) Cài đặt các thư viện cần thiết:
+4. Cài đặt các thư viện phụ thuộc:
    ```bash
+   pip install --upgrade pip
    pip install -r requirements.txt
    ```
 
-4. Khởi chạy máy chủ FastAPI:
+5. Khởi chạy máy chủ FastAPI:
    ```bash
    uvicorn main:app --reload --host 0.0.0.0 --port 8000
    ```
