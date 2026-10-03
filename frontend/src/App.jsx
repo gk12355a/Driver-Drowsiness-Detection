@@ -5,6 +5,7 @@ import {
 } from 'lucide-react';
 import RiskGauge from './components/RiskGauge';
 import BiometricChart from './components/BiometricChart';
+import HelmIcon from './components/HelmIcon';
 import { soundManager } from './utils/sound';
 
 export default function App() {
@@ -209,8 +210,8 @@ export default function App() {
       <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-6 py-3 sm:py-4">
         <div className="max-w-[1600px] mx-auto flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
-              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 shrink-0 rounded-xl bg-gradient-to-tr from-blue-600 via-indigo-600 to-cyan-500 flex items-center justify-center shadow-lg shadow-blue-500/25 border border-blue-400/30">
+              <HelmIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white transform hover:rotate-45 transition-transform duration-500" />
             </div>
             <div>
               <h1 className="text-base sm:text-xl font-bold tracking-tight bg-gradient-to-r from-white via-slate-200 to-cyan-400 bg-clip-text text-transparent">
