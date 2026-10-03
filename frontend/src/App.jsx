@@ -8,10 +8,24 @@ import BiometricChart from './components/BiometricChart';
 import HelmIcon from './components/HelmIcon';
 import { soundManager } from './utils/sound';
 
-const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST || window.location.hostname || 'localhost';
-const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '8000';
-const BACKEND_HTTP = `http://${BACKEND_HOST}:${BACKEND_PORT}`;
-const BACKEND_WS = `ws://${BACKEND_HOST}:${BACKEND_PORT}`;
+// URL cấu hình Backend (hỗ trợ localhost, Docker và môi trường Cloud như Vercel/Render)
+const envBackendUrl = import.meta.env.VITE_BACKEND_URL;
+const envBackendWsUrl = import.meta.env.VITE_BACKEND_WS_URL;
+
+const isHttps = typeof window !== 'undefined' && window.location.protocol === 'https:';
+const defaultHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
+const backendHost = import.meta.env.VITE_BACKEND_HOST || defaultHost;
+const backendPort = import.meta.env.VITE_BACKEND_PORT || '8000';
+
+const BACKEND_HTTP = envBackendUrl 
+  ? envBackendUrl.replace(/\/+$/, '') 
+  : `${isHttps ? 'https:' : 'http:'}//${backendHost}:${backendPort}`;
+
+const BACKEND_WS = envBackendWsUrl 
+  ? envBackendWsUrl.replace(/\/+$/, '') 
+  : (envBackendUrl 
+      ? envBackendUrl.replace(/^http/, 'ws').replace(/\/+$/, '') 
+      : `${isHttps ? 'wss:' : 'ws:'}//${backendHost}:${backendPort}`);
 
 export default function App() {
   const [isStreaming, setIsStreaming] = useState(false);
