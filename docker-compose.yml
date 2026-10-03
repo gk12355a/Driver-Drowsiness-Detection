@@ -1,0 +1,47 @@
+services:
+  # ----------------------------------------------------------------------------
+  # Backend: Python 3.11 + FastAPI + MediaPipe + SQLite
+  # ----------------------------------------------------------------------------
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: drowsiness_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      # Named volume lưu trữ cơ sở dữ liệu SQLite (bảo toàn dữ liệu và tối ưu I/O)
+      - drowsiness_data:/app/data
+      # Mount thư mục snapshots ra ngoài máy host để dễ dàng xem ảnh chụp cảnh báo
+      - ./backend/snapshots:/app/snapshots
+    environment:
+      - PYTHONUNBUFFERED=1
+      - DB_PATH=/app/data/drowsiness.db
+    networks:
+      - drowsiness_net
+
+  # ----------------------------------------------------------------------------
+  # Frontend: React Vite + TailwindCSS + Nginx Alpine
+  # ----------------------------------------------------------------------------
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: drowsiness_frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+    environment:
+      - VITE_BACKEND_PORT=8000
+    networks:
+      - drowsiness_net
+
+volumes:
+  drowsiness_data:
+
+networks:
+  drowsiness_net:
+    driver: bridge

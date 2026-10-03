@@ -3,9 +3,12 @@ from pydantic import BaseModel
 from typing import Optional, List
 import os
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "drowsiness.db")
+DB_PATH = os.getenv("DB_PATH", os.path.join(os.path.dirname(__file__), "drowsiness.db"))
 
 def init_db():
+    db_dir = os.path.dirname(DB_PATH)
+    if db_dir:
+        os.makedirs(db_dir, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""

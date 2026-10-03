@@ -8,6 +8,11 @@ import BiometricChart from './components/BiometricChart';
 import HelmIcon from './components/HelmIcon';
 import { soundManager } from './utils/sound';
 
+const BACKEND_HOST = import.meta.env.VITE_BACKEND_HOST || window.location.hostname || 'localhost';
+const BACKEND_PORT = import.meta.env.VITE_BACKEND_PORT || '8000';
+const BACKEND_HTTP = `http://${BACKEND_HOST}:${BACKEND_PORT}`;
+const BACKEND_WS = `ws://${BACKEND_HOST}:${BACKEND_PORT}`;
+
 export default function App() {
   const [isStreaming, setIsStreaming] = useState(false);
   const [telemetry, setTelemetry] = useState({
@@ -48,7 +53,7 @@ export default function App() {
   // Fetch incidents & storage status periodically
   const fetchStatus = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/status");
+      const res = await fetch(`${BACKEND_HTTP}/api/status`);
       if (res.ok) {
         const data = await res.json();
         if (data.storage) setStorageInfo(data.storage);
@@ -58,7 +63,7 @@ export default function App() {
 
   const fetchIncidents = async () => {
     try {
-      const res = await fetch("http://localhost:8000/api/incidents");
+      const res = await fetch(`${BACKEND_HTTP}/api/incidents`);
       if (res.ok) {
         const data = await res.json();
         setIncidents(data.incidents || []);
@@ -84,7 +89,7 @@ export default function App() {
     }
     try {
       setIsCleaning(true);
-      const res = await fetch("http://localhost:8000/api/snapshots/cleanup?clear_all=true", { 
+      const res = await fetch(`${BACKEND_HTTP}/api/snapshots/cleanup?clear_all=true`, { 
         method: "POST" 
       });
       if (res.ok) {
@@ -138,7 +143,7 @@ export default function App() {
         }
 
         // Initialize WebSocket
-        const ws = new WebSocket("ws://localhost:8000/ws/detect");
+        const ws = new WebSocket(`${BACKEND_WS}/ws/detect`);
         wsRef.current = ws;
 
         ws.onopen = () => {
@@ -187,7 +192,7 @@ export default function App() {
 
   const handleStartCalibration = async () => {
     try {
-      await fetch("http://localhost:8000/api/calibration", {
+      await fetch(`${BACKEND_HTTP}/api/calibration`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "start" })

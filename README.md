@@ -11,8 +11,10 @@ Hệ thống nhận diện tài xế ngủ gật theo thời gian thực (Real-t
 4. [Co che luu tru & Co so du lieu](#co-che-luu-tru--co-so-du-lieu-database)
 5. [Yeu cau moi truong](#yeu-cau-moi-truong)
 6. [Huong dan cai dat & Khoi chay chi tiet](#huong-dan-cai-dat--khoi-chay-chi-tiet)
-   - [Khoi chay Backend (Python FastAPI)](#buoc-1-khoi-chay-backend)
-   - [Khoi chay Frontend (React Vite)](#buoc-2-khoi-chay-frontend)
+   - [Cach 1: Khoi chay bang Docker & Docker Compose (Khuyen dung)](#cach-1-khoi-chay-bang-docker--docker-compose-khuyen-dung)
+   - [Cach 2: Khoi chay thu cong (Manual Development)](#cach-2-khoi-chay-thu-cong-manual-development)
+     - [Buoc 1: Khoi chay Backend (Python FastAPI)](#buoc-1-khoi-chay-backend-python-fastapi)
+     - [Buoc 2: Khoi chay Frontend (React Vite)](#buoc-2-khoi-chay-frontend-react-vite)
 7. [Huong dan su dung he thong](#huong-dan-su-dung-he-thong)
 8. [Tai lieu API Endpoints](#tai-lieu-api-endpoints)
 
@@ -64,9 +66,12 @@ Hệ thống giải quyết bài toán an toàn giao thông qua việc giám sá
 Driver Drowsiness Detection/
 │
 ├── .gitignore                      # Cấu hình bỏ qua file rác, virtualenv, node_modules, DB, snapshots
+├── docker-compose.yml              # Điều phối đa container Backend & Frontend bằng Docker Compose
 ├── README.md                       # Tài liệu hướng dẫn chi tiết dự án
 │
 ├── backend/                        # Nguồn mã Python Backend
+│   ├── .dockerignore               # Cấu hình loại trừ file khi build Docker Backend
+│   ├── Dockerfile                  # Container hóa Backend (Python 3.11-slim + MediaPipe + OpenCV)
 │   ├── venv/                       # Virtual Environment Python
 │   ├── snapshots/                  # Thư mục lưu trữ ảnh bằng chứng chụp khi xảy ra SOS
 │   │   └── .gitkeep
@@ -80,12 +85,16 @@ Driver Drowsiness Detection/
 │   └── main.py                     # Entry point FastAPI, WebSocket stream, REST API
 │
 └── frontend/                       # Nguồn mã Frontend React Vite
+    ├── .dockerignore               # Cấu hình loại trừ file khi build Docker Frontend
+    ├── Dockerfile                  # Multi-stage build Frontend (Node 22 -> Nginx Alpine)
+    ├── nginx.conf                  # Cấu hình Nginx reverse proxy API/WebSocket & static files
     ├── node_modules/               # Thư viện npm
     ├── public/                     # Static assets
     ├── src/
     │   ├── components/
     │   │   ├── RiskGauge.jsx       # Đồng hồ đo điểm rủi ro bán nguyệt (0-10)
-    │   │   └── BiometricChart.jsx  # Biểu đồ vẽ sóng EAR, MAR trực tiếp bằng Canvas
+    │   │   ├── BiometricChart.jsx  # Biểu đồ vẽ sóng EAR, MAR trực tiếp bằng Canvas
+    │   │   └── HelmIcon.jsx        # Logo vô lăng lái tàu kiểu Kubernetes
     │   ├── utils/
     │   │   └── sound.js            # Module âm thanh Synthesizer & Giọng nói tiếng Việt
     │   ├── App.jsx                 # Màn hình chính giám sát & quản trị SOS
@@ -135,7 +144,37 @@ Module [`cleaner.py`](backend/cleaner.py) quản lý và tự động giải ph�
 
 ## Huong dan cai dat & Khoi chay chi tiet
 
-### Buoc 1: Khoi chay Backend
+### Cach 1: Khoi chay bang Docker & Docker Compose (Khuyen dung)
+
+He thong ho tro dong goi toan dien ca Backend va Frontend thong qua Docker. Cach nay giup ban khoi chay ung dung ngay lap tuc chi bang 1 cau lenh ma khong can cai dat thu vien Python hay Node.js len may host.
+
+1. **Yeu cau truoc khi chay**:
+   - Da cai dat **Docker** va **Docker Compose** (tren Windows/macOS cai **Docker Desktop** va khoi dong Docker).
+
+2. **Lenh khoi chay he thong**:
+   Mo cua so Terminal / PowerShell tai thu muc goc cua du an (`Driver Drowsiness Detection/`) va thuc thi:
+   ```bash
+   docker compose up --build
+   ```
+   *(Muon chay che do chay ngam duoi nen background, them co `-d`: `docker compose up --build -d`)*.
+
+3. **Kiem tra va truy cap he thong**:
+   - **Frontend Dashboard**: `http://localhost:5173`
+   - **Backend API Docs (Swagger UI)**: `http://localhost:8000/docs`
+   - **WebSocket Endpoint**: `ws://localhost:8000/ws/detect`
+
+4. **Dung he thong**:
+   Nhan `Ctrl + C` (neu chay truc tiep) hoac chay lenh:
+   ```bash
+   docker compose down
+   ```
+   *(Du lieu vi pham SQLite va cac anh chup snapshot duoc bao toan trong volume va thu muc `backend/snapshots/`)*.
+
+---
+
+### Cach 2: Khoi chay thu cong (Manual Development)
+
+### Buoc 1: Khoi chay Backend (Python FastAPI)
 
 1. Mở cửa sổ Terminal / PowerShell, điều hướng vào thư mục backend:
    ```powershell
@@ -183,7 +222,7 @@ Module [`cleaner.py`](backend/cleaner.py) quản lý và tự động giải ph�
 
 ---
 
-### Buoc 2: Khoi chay Frontend
+### Buoc 2: Khoi chay Frontend (React Vite)
 
 1. Mở một cửa sổ Terminal / PowerShell thứ hai, điều hướng vào thư mục frontend:
    ```powershell
